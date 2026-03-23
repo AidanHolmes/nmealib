@@ -1,0 +1,54 @@
+#   Copyright 2026 Aidan Holmes
+#   NMEA parser
+# 	Makefile for nmea.lib and test application. This uses make to build for VBCC
+LIBDEVMAJOR = 1
+LIBDEVMINOR = 0
+LIBDEVDATE = "22.03.2026"
+
+VCROOTBIN = $(VBCC)/bin
+CC = $(VCROOTBIN)/vc
+VASM = $(VCROOTBIN)/vasmm68k_mot
+SCOPTS = +aos68k -lamiga -g -I/opt/amiga/NDK3.2/Include_H
+DEFSTD = -DAS_LIBRARY -DLIBDEVMAJOR=$(LIBDEVMAJOR) -DLIBDEVMINOR=$(LIBDEVMINOR) -DLIBDEVDATE=$(LIBDEVDATE) -DLIBDEVNAME=$(LIBDEVNAME)
+CFLAGS = $(SCOPTS) $(DEFSTD) -I$(VBCC)/targets/m68k-amigaos/include -static -v
+
+SRC = ../Src
+BIN = Bin
+OBJ = Objs
+DEVICENAME = nmea
+LIBNAME = $(DEVICENAME).lib
+LIBDEVNAME = $(DEVICENAME).library
+AMINETNAME = NMEALib
+
+OBJS= $(OBJ)/utils.o $(OBJ)/ggaclass.o $(OBJ)/gpsclass.o $(OBJ)/glonassclass.o $(OBJ)/nmeaparser.o $(OBJ)/gllclass.o $(OBJ)/gsvclass.o $(OBJ)/vtgclass.o $(OBJ)/gsaclass.o $(OBJ)/rmcclass.o $(OBJ)/debug.o
+LIBOBJS = $(OBJ)/timing.o $(OBJ)/libdev.o $(OBJ)/nmealib.o
+OBJSTest = $(OBJ)/main.o
+ALLOBJS = $(OBJS) $(OBJSTest) $(LIBOBJS)
+
+.PHONY: all dirs clean lib
+
+all: dirs $(BIN)/$(LIBNAME) $(BIN)/Test $(BIN)/$(LIBDEVNAME)
+
+dirs:
+	mkdir -p $(BIN)
+	mkdir -p $(OBJ)
+
+lib: $(BIN)/$(LIBDEVNAME)
+	cp $(BIN)/$(LIBDEVNAME) ../$(AMINETNAME)/$(LIBDEVNAME)
+	mkdir -p ../$(AMINETNAME)/Include/nmea/
+	cp $(SRC)/libtypes.h ../$(AMINETNAME)/Include/nmea/
+	
+clean:
+	rm -f $(OBJ)/*.o $(OBJ)/*.asm $(BIN)/*.lnk $(BIN)/*.info $(BIN)/*.map $(BIN)/*.gst $(BIN)/$(LIBNAME) $(BIN)/$(LIBDEVNAME) $(BIN)/Test
+
+$(BIN)/$(LIBDEVNAME): $(BIN)/$(LIBNAME) $(LIBOBJS)
+	$(CC) $(CFLAGS) -o $@ $(LIBOBJS) -L$(BIN) -l$(DEVICENAME)
+	
+$(BIN)/Test: $(BIN)/$(LIBNAME) $(OBJSTest)
+	$(CC) $(CFLAGS) -o $@ $(OBJSTest) -L$(BIN) -l$(DEVICENAME)
+	
+$(BIN)/$(LIBNAME): $(OBJS)
+	cat $(OBJS) > $(BIN)/$(LIBNAME)
+
+$(ALLOBJS): $(OBJ)/%.o: $(SRC)/%.c
+	$(CC) $(CFLAGS) -c $^ -o $@

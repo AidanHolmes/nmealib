@@ -1,0 +1,62 @@
+Short: NMEA data library
+Kurz: NMEA data library
+Uploader: amiga@aidanholmes.co.uk (Aidan Holmes)
+Author: amiga@aidanholmes.co.uk (Aidan Holmes)
+Type: comm/misc
+Version: 1.0
+Requires: Serial satellite receiver
+Architecture: m68k-amigaos >= v36
+Distribution: Aminet
+
+About
+-----
+NMEA serial data parser library. Listens on a serial port for NMEA data
+and provides functions to access location, time and satellite information.
+
+This package provides the nmea.library and header files for development.
+
+Testing was conducted using a u-blox VK-162 USB receiver via Poseidon 
+usbmodem.device. This should work using any serial device, including the 
+standard serial.device which comes with the Amiga OS. 
+
+Use the library for your own applications to sync up UTC time/date, plot 
+your Amiga on a map, make a satnav or track satellites.
+
+Library Install
+---------------
+Copy nmea.library to LIBS:
+
+Versions
+--------
+1.0 - 22 Mar 2026: First released version.
+
+
+IMPORTANT NOTE:
+---------------
+Testing has been conducted with a USB NMEA satellite device. RS232 or other
+serial hardware may not be fully compatible with Amiga serial hardware. 
+Please check all specifications and required voltages before plugging in and
+powering up. 
+All data provided by this library should not be used where accuracy, safety
+and data protection are important.
+
+Legal Information
+-----------------
+NMEA data library is Copyright (c) 2026 Aidan Holmes
+
+Redistribution and use of the binaries are permitted as long as the 
+file names are retained, binaries are unmodifed 
+and the above copyright notice is reproduced.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.

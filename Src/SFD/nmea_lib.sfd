@@ -1,0 +1,17 @@
+==id $Id: nmea_lib.sfd,v 1.0 2026/03/13 aidan Exp $
+==base _NMEABase
+==include <exec/types.h>
+==include <nmea/libtypes.h>
+==copyright Copyright (C) 2026 Aidan Holmes
+==bias 30
+==public
+APTR AllocateHandle()()
+VOID FreeHandle(APTR handle)(a3)
+BOOL OpenSerial(APTR handle,char *deviceName,ULONG unit)(a3/a0/d0)
+BOOL CloseSerial(APTR handle)(a3)
+BOOL Connected(APTR handle)(a3)
+struct NMEADateTime* GetDateTime(APTR handle)(a3)
+struct NMEALocation* GetLocation(APTR handle)(a3)
+struct NMEASatellite* GetFirstSatellite(APTR handle, UWORD type)(a3/d0)
+struct NMEASatellite* GetNextSatellite(APTR handle, UWORD type)(a3/d0)
+==end

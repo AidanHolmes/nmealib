@@ -1,0 +1,99 @@
+#   Copyright 2026 Aidan Holmes
+#   NMEA parsing library
+
+# Version - these values are mastered here and overwrite the generated values in makefiles for Debug and Release
+AMINETNAME = NMEALib
+DEVICENAME = nmea
+LIBDEVMAJOR = 1
+LIBDEVMINOR = 0
+LIBDEVDATE = '22.03.2026'
+LIBDEVNAME = $(DEVICENAME).library
+
+LHADIR = $(AMINETNAME)
+RELEASEDIR = Release
+DEBUGDIR = Debug
+RELEASE = $(RELEASEDIR)/makefile
+DEBUG = $(DEBUGDIR)/makefile
+
+# Point to location of headers.
+INCDEPENDS=IncludeDirectory=//NDK3.2R4/Include_H
+
+# optimised and release version
+#optdepth
+# defines the maximum depth of function calls to be Mined. The
+# range is 0 to 6, and the default value is 3.
+PRODCOPTS = nocheckabort NOSTACKCHECK OPTIMIZE Optimizerinline OptimizerComplexity=30 OptimizerGlobal OptimizerDepth=6 OptimizerLoop OptimizerTime OptimizerSchedule OptimizerPeephole IGNORE=193 $(INCDEPENDS)
+
+# debug version build options
+DBGCOPTS = nocheckabort NOSTACKCHECK DEFINE=_DEBUG DEFINE=DEBUG_SERIAL debug=full $(INCDEPENDS)
+
+all: $(RELEASE) $(DEBUG) includes lib
+	execute <<
+		cd $(RELEASEDIR)
+		smake LIBDEVMAJOR=$(LIBDEVMAJOR) LIBDEVMINOR=$(LIBDEVMINOR) LIBDEVDATE=$(LIBDEVDATE)
+		cd /
+		<
+	execute <<
+		cd $(DEBUGDIR)
+		smake LIBDEVMAJOR=$(LIBDEVMAJOR) LIBDEVMINOR=$(LIBDEVMINOR) LIBDEVDATE=$(LIBDEVDATE)
+		cd /
+		<
+	
+clean:
+	execute <<
+		cd $(RELEASEDIR)
+		smake clean
+		cd /
+		<
+	execute <<
+		cd $(DEBUGDIR)
+		smake clean
+		cd /
+		<
+	- delete $(AMINETNAME).lha $(AMINETNAME)/$(LIBDEVNAME) $(AMINETNAME)/Include/C/pragma/\#? $(AMINETNAME)/Include/C/inline/\#? $(AMINETNAME)/Include/C/proto/\#? $(AMINETNAME)/Include/C/inline/\#? $(AMINETNAME)/Include/Assembly/lvo/\#? $(AMINETNAME)/FD/\#? $(AMINETNAME)/Include/nmea/\#?
+
+	
+$(RELEASE): makefile.master makefile
+	copy makefile.master $(RELEASE)
+	splat -o "^SCOPTS.+\$" "SCOPTS = $(PRODCOPTS)" $(RELEASE)
+	splat -o "^DEVICENAME.+\$" "DEVICENAME = $(DEVICENAME)" $(RELEASE)
+	splat -o "^LIBDEVMAJOR.+\$" "LIBDEVMAJOR = $(LIBDEVMAJOR)" $(RELEASE)
+	splat -o "^LIBDEVMINOR.+\$" "LIBDEVMINOR = $(LIBDEVMINOR)" $(RELEASE)
+	splat -o "^BUILD.+\$" "BUILD = Release" $(RELEASE)
+	splat -o "^AMINETNAME.+\$" "AMINETNAME = $(AMINETNAME)" $(RELEASE)
+	
+$(DEBUG): makefile.master makefile
+	copy makefile.master $(DEBUG)
+	splat -o "^SCOPTS.+\$" "SCOPTS = $(DBGCOPTS)" $(DEBUG)
+	splat -o "^DEVICENAME.+\$" "DEVICENAME = $(DEVICENAME)" $(DEBUG)
+	splat -o "^LIBDEVMAJOR.+\$" "LIBDEVMAJOR = $(LIBDEVMAJOR)" $(DEBUG)
+	splat -o "^LIBDEVMINOR.+\$" "LIBDEVMINOR = $(LIBDEVMINOR)" $(DEBUG)
+	splat -o "^BUILD.+\$" "BUILD = Debug" $(DEBUG)
+	splat -o "^AMINETNAME.+\$" "AMINETNAME = $(AMINETNAME)" $(DEBUG)
+
+includes: Src/SFD/nmea_lib.sfd
+	- makedir "$(AMINETNAME)/FD"
+	- makedir "$(AMINETNAME)/Include"
+	- makedir "$(AMINETNAME)/Include/nmea"
+	- makedir "$(AMINETNAME)/Include/C"
+	- makedir "$(AMINETNAME)/Include/C/pragma"
+	- makedir "$(AMINETNAME)/Include/C/inline"
+	- makedir "$(AMINETNAME)/Include/C/proto"
+	- makedir "$(AMINETNAME)/Include/C/clib"
+	- makedir "$(AMINETNAME)/Include/Assembly"
+	- makedir "$(AMINETNAME)/Include/Assembly/lvo"
+	fd2pragma "Src/SFD/nmea_lib.sfd" 111 TO "$(AMINETNAME)/Include/C/clib" AUTOHEADER
+	fd2pragma "Src/SFD/nmea_lib.sfd" 110 TO "$(AMINETNAME)/FD"
+	fd2pragma "Src/SFD/nmea_lib.sfd" 6 TO "$(AMINETNAME)/Include/C/pragma"
+	fd2pragma "Src/SFD/nmea_lib.sfd" 40 TO "$(AMINETNAME)/Include/C/inline"
+	fd2pragma "Src/SFD/nmea_lib.sfd" 38 TO "$(AMINETNAME)/Include/C/proto"
+	fd2pragma "Src/SFD/nmea_lib.sfd" 70 TO "$(AMINETNAME)/Include/C/inline"
+	fd2pragma "Src/SFD/nmea_lib.sfd" 23 TO "$(AMINETNAME)/Include/Assembly/lvo"
+	
+lib:
+	execute <<
+		cd $(RELEASEDIR)
+		smake lib LIBDEVMAJOR=$(LIBDEVMAJOR) LIBDEVMINOR=$(LIBDEVMINOR) LIBDEVDATE=$(LIBDEVDATE) LIBDEVNAME=$(LIBDEVNAME) DEVICENAME=$(DEVICENAME)
+		cd /
+		<
+	lha -Qr -xr u $(AMINETNAME).lha $(LHADIR)
